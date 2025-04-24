@@ -1,9 +1,25 @@
 import re
 from helper import get_multiplier
+from pypdf import PdfReader
+
+def get_pdf_text(path):
+    # creating a pdf reader object
+    print("Reading PDF file...")
+    reader = PdfReader(path)
+    text = ""
+
+    for page in reader.pages:
+        # extracting text from page
+        text += "\n" + page.extract_text()
+    
+    return text
+    #smart_greatest(text)
 
 # parses document input and returns the greatest numerical value found 
 def find_greatest(doc):
-    return
+    text = get_pdf_text(doc)
+    print("Finding greatest number...")
+    return smart_greatest(text)
 
 #only finds plain numbers, integers and floats alike 
 def basic_greatest(text):
@@ -28,10 +44,7 @@ def basic_greatest(text):
 #  (?:\.\d+)? matches an optional decimal point followed by one or more digits, extends support to floats 
 NUMBER_REGEX = r'(?<!\w)[+\-−]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?'
 
-
-#uses regex to find numbers with units and converts them to their numerical value
-#does contextual conversion of numbers with units, wrt to section / paragraph. 
-#equally tolerant of 75,000,000 and 75000000
+#does contextual conversion of numbers with units, wrt to section / paragraph, equally tolerant of 75,000,000.00 and 75000000.00
 def smart_greatest(text):
      # Split the text into paragraphs or logical blocks
     sections = re.split(r'\n\s*\n', text.strip())  # double newline = new paragraph
